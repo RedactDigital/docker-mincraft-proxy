@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: minecraft-proxy
+    container_name: minecraft-proxy
+    restart: unless-stopped
+    ports:
+      - '25577:25577'
+    volumes:
+      - minecraft-velocity:/velocity
+      - ./velocity.toml:/velocity/velocity.toml
+
+volumes:
+  minecraft-velocity:
