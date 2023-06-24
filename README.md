@@ -1,5 +1,12 @@
 # Minecraft Velocity Proxy
 
+## Third Party Software
+### [papermc.io](https://docs.papermc.io/)
+
+### [Velocity](https://docs.papermc.io/velocity/getting-started)
+
+---
+
 Before starting the server, you need to create a `velocity.toml` file. You can use the example below as a template.
 Then mount the `velocity.toml` file into the container at `/velocity/velocity.toml`.
 
