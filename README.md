@@ -1,6 +1,7 @@
 # Minecraft Velocity Proxy
-### Before starting the server, you need to create a `velocity.toml` file. You can use the example below as a template.
-### Then mount the `velocity.toml` file into the container at `/velocity/velocity.toml`.
+
+Before starting the server, you need to create a `velocity.toml` file. You can use the example below as a template.
+Then mount the `velocity.toml` file into the container at `/velocity/velocity.toml`.
 
 I'd recommend also creating a volume for the `/velocity` directory so it persists between container restarts. You can also mount the `/velocity` directory to your host machine if you prefer.
 
