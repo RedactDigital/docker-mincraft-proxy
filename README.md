@@ -7,10 +7,9 @@
 
 ---
 
-Before starting the server, you need to create a `velocity.toml` file. You can use the example below as a template.
-Then mount the `velocity.toml` file into the container at `/velocity/velocity.toml`.
+To start the server, you must create a `velocity.toml` file. You can use the template below for this purpose. Then, mount the `velocity.toml` file into the container at `/velocity/velocity.toml`.
 
-I'd recommend also creating a volume for the `/velocity` directory so it persists between container restarts. You can also mount the `/velocity` directory to your host machine if you prefer.
+It is advisable to create a volume for the `/velocity` directory so it can persist between container restarts. If you prefer, you can also mount the `/velocity` directory to your host machine. Additionally, ensure that you publish the 25577 port.
 
 ## Example `docker-compose.yml`
 ```yaml
@@ -20,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: minecraft-proxy
+    image: ghcr.io/redactdigital/docker-minecraft-proxy:latest
     container_name: minecraft-proxy
     restart: unless-stopped
     ports:
@@ -41,7 +40,7 @@ docker run -d \
   -v minecraft-velocity:/velocity \
   -v ./velocity.toml:/velocity/velocity.toml \
   --restart unless-stopped \
-  minecraft-proxy
+  ghcr.io/redactdigital/docker-minecraft-proxy:latest
 ```
 
 ## Example `velocity.toml`
