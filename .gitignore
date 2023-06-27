@@ -1,1 +1,3 @@
-*.toml
+*config*
+*plugins*
+docker-compose*
