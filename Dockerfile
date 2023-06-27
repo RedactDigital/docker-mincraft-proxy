@@ -1,8 +1,18 @@
 FROM ubuntu:22.04
 
-ENV VELOCITY_URL=https://api.papermc.io/v2/projects/velocity/versions/3.2.0-SNAPSHOT/builds/259/downloads/velocity-3.2.0-SNAPSHOT-259.jar
-ENV XMSSIZE=1G
-ENV XMXSIZE=1G
+ENV USER=velocity
+ENV UID=1000
+ENV GID=1000
+ENV WORKDIR=/velocity
+
+# Vars used in scripts and entrypoint
+ENV TMUX_SESSION=velocity
+ENV PROJECT=velocity
+
+# Create user and group
+RUN groupadd --gid ${GID} ${USER} && \
+    useradd --create-home --shell /bin/bash --uid ${UID} --gid ${GID} ${USER} && \
+    usermod -aG sudo ${USER}
 
 # Install dependencies
 RUN apt update && apt upgrade -y && apt install -y --no-install-recommends \
@@ -13,7 +23,8 @@ RUN apt update && apt upgrade -y && apt install -y --no-install-recommends \
     apt-transport-https \
     gnupg \
     wget \
-    tmux
+    tmux \
+    jq
 
 # Import the Amazon Corretto public key and repository
 RUN curl https://apt.corretto.aws/corretto.key | apt-key add - && \
@@ -33,17 +44,21 @@ RUN apt-get -y autoremove \
     && rm -rf /tmp/* \
     && rm -rf /var/tmp/*
 
-WORKDIR /velocity
+USER ${USER}
+WORKDIR $WORKDIR
 
-# Install velocity
-RUN wget $VELOCITY_URL -O velocity.jar
+# Copy scripts folder and make them executable
+COPY --chown=${USER}:${USER} scripts scripts
+RUN chmod +x scripts/*
 
-# Copy start script
-COPY start.sh start.sh
-RUN chmod +x start.sh
+# Add commands to bashrc
+RUN echo "alias start='bash $WORKDIR/scripts/start.sh'" >> ~/.bashrc && \
+    echo "alias stop='bash $WORKDIR/scripts/stop.sh'" >> ~/.bashrc && \
+    echo "alias debug='bash $WORKDIR/scripts/debug.sh'" >> ~/.bashrc \
+    && echo "alias restart='bash $WORKDIR/scripts/restart.sh'" >> ~/.bashrc
 
 # Copy entrypoint
-COPY entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
+COPY --chown=${USER}:${USER} entrypoint.sh /home/${USER}/entrypoint.sh
+RUN chmod +x /home/${USER}/entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["sh", "-c", "/home/$USER/entrypoint.sh"]
