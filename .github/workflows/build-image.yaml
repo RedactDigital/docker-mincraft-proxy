@@ -6,12 +6,8 @@ concurrency:
 
 on:
   pull_request:
-    branches:
-      - main
-    types: [opened, synchronize, reopened, ready_for_review]
-  push:
-    branches:
-      - main
+    types: [closed]
+    branches: [main]
 
 jobs:
   # We are going to build an image and push it to ghcr.io (GitHub Container Registry)
@@ -45,7 +41,9 @@ jobs:
         with:
           push: true
           # Add tags but lowercase the branch name
-          tags: ghcr.io/${{ steps.set-var.outputs.lowercase }}:latest
+          tags: |
+            ghcr.io/${{ steps.set-var.outputs.lowercase }}:latest
+            ghcr.io/${{ steps.set-var.outputs.lowercase }}:${{ github.head_ref }}
           cache-from: type=gha # This will use the cached image from the last time we built it (Caching requires buildx done above)
           cache-to: type=gha,mode=max # This will cache the image for the next time we build it (max means it will cache all layers)
           labels: |
